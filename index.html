@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Chở Người Yêu Đi Học Thêm Văn</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -26,13 +26,12 @@
             align-items: center;
         }
         canvas {
-            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.85);
             border-radius: 12px;
-            background-color: #70c5ce;
+            background-color: #3a7bd5;
         }
-        /* Mobile Control Overlay */
         .touch-btn {
-            background: rgba(255, 255, 255, 0.25);
+            background: rgba(255, 255, 255, 0.22);
             border: 2px solid rgba(255, 255, 255, 0.5);
             backdrop-filter: blur(4px);
             border-radius: 50%;
@@ -44,10 +43,11 @@
             font-size: 1.2rem;
             user-select: none;
             touch-action: manipulation;
+            transition: transform 0.08s, background 0.08s;
         }
-        .touch-btn:active {
-            background: rgba(255, 255, 255, 0.5);
-            transform: scale(0.95);
+        .touch-btn:active, .touch-btn.active {
+            background: rgba(255, 255, 255, 0.55);
+            transform: scale(0.92);
         }
     </style>
 </head>
@@ -57,44 +57,44 @@
     <canvas id="gameCanvas"></canvas>
 
     <!-- Overlay UI -->
-    <div id="ui-overlay" class="absolute top-3 left-3 right-3 flex justify-between items-start pointer-events-none z-30">
+    <div id="ui-overlay" class="absolute top-3 left-3 right-3 flex justify-between items-start pointer-events-none z-30 gap-2">
         <!-- Player HP & Info -->
-        <div class="bg-black/60 p-3 rounded-xl border border-white/20 backdrop-blur-md min-w-[200px]">
-            <div class="text-xs font-bold uppercase tracking-wide text-pink-400 mb-1">Máu Người Chơi</div>
-            <div class="w-full bg-gray-700 h-5 rounded-full overflow-hidden p-0.5 border border-white/30">
-                <div id="hp-bar" class="bg-gradient-to-r from-red-500 to-green-500 h-full rounded-full transition-all duration-150" style="width: 100%;"></div>
+        <div class="bg-black/65 p-2.5 md:p-3 rounded-xl border border-white/20 backdrop-blur-md min-w-[150px] md:min-w-[210px]">
+            <div class="text-[10px] md:text-xs font-bold uppercase tracking-wide text-pink-400 mb-1">Máu Người Chơi</div>
+            <div class="w-full bg-gray-700 h-4 md:h-5 rounded-full overflow-hidden p-0.5 border border-white/30">
+                <div id="hp-bar" class="bg-gradient-to-r from-red-500 via-yellow-400 to-green-500 h-full rounded-full transition-all duration-150" style="width: 100%;"></div>
             </div>
-            <div class="text-sm font-black text-right mt-1" id="hp-text">10000 / 10000 HP</div>
+            <div class="text-xs md:text-sm font-black text-right mt-1" id="hp-text">10000 / 10000 HP</div>
         </div>
 
         <!-- Timer & Stage -->
-        <div class="bg-black/60 px-5 py-2 rounded-xl border border-white/20 backdrop-blur-md text-center">
-            <div class="text-xs font-bold text-yellow-400 uppercase tracking-widest">Thời Gian Đến Lớp</div>
-            <div id="timer-text" class="text-3xl font-black text-white font-mono">02:00</div>
-            <div id="stage-text" class="text-xs text-blue-300 font-semibold mt-0.5">Giai đoạn 1: Lái xe tới đón người yêu</div>
+        <div class="bg-black/65 px-3 md:px-5 py-2 rounded-xl border border-white/20 backdrop-blur-md text-center">
+            <div class="text-[10px] md:text-xs font-bold text-yellow-400 uppercase tracking-widest">Thời Gian Đến Lớp</div>
+            <div id="timer-text" class="text-2xl md:text-3xl font-black text-white font-mono">02:00</div>
+            <div id="stage-text" class="text-[11px] md:text-xs text-blue-300 font-semibold mt-0.5">Giai đoạn 1: Phóng xe tới nhà người yêu</div>
         </div>
 
         <!-- Boss HP (Hidden initially) -->
-        <div id="boss-hp-box" class="bg-black/60 p-3 rounded-xl border border-red-500/50 backdrop-blur-md min-w-[200px] hidden">
-            <div class="text-xs font-bold uppercase tracking-wide text-red-400 mb-1">Máu Nhóm Giang Hồ (Boss)</div>
-            <div class="w-full bg-gray-700 h-5 rounded-full overflow-hidden p-0.5 border border-red-400/30">
+        <div id="boss-hp-box" class="bg-black/65 p-2.5 md:p-3 rounded-xl border border-red-500/50 backdrop-blur-md min-w-[150px] md:min-w-[210px] hidden">
+            <div class="text-[10px] md:text-xs font-bold uppercase tracking-wide text-red-400 mb-1">Nhóm Giang Hồ (Boss)</div>
+            <div class="w-full bg-gray-700 h-4 md:h-5 rounded-full overflow-hidden p-0.5 border border-red-400/30">
                 <div id="boss-hp-bar" class="bg-gradient-to-r from-orange-500 to-red-600 h-full rounded-full transition-all duration-150" style="width: 100%;"></div>
             </div>
-            <div class="text-sm font-black text-right mt-1 text-red-300" id="boss-hp-text">100 / 100 HP</div>
+            <div class="text-xs md:text-sm font-black text-right mt-1 text-red-300" id="boss-hp-text">100 / 100 HP</div>
         </div>
     </div>
 
     <!-- Start & Game Over Screen Modal -->
     <div id="modal-screen" class="absolute inset-0 bg-black/80 backdrop-blur-md flex flex-col justify-center items-center p-6 text-center z-50">
-        <h1 id="modal-title" class="text-4xl md:text-5xl font-black text-yellow-400 mb-3 drop-shadow-lg">HÀNH TRÌNH CHỞ NGƯỜI YÊU ĐI HỌC THÊM VĂN</h1>
+        <h1 id="modal-title" class="text-3xl md:text-5xl font-black text-yellow-400 mb-3 drop-shadow-lg">HÀNH TRÌNH CHỞ NGƯỜI YÊU ĐI HỌC THÊM VĂN</h1>
         <p id="modal-desc" class="text-gray-200 max-w-lg mb-6 text-sm md:text-base leading-relaxed">
-            Bạn có <b>2 phút</b> để tự lái xe Wave đến nhà bạn gái, chở cô ấy tới lớp học thêm Văn và chiến đấu đánh bại nhóm ngáng đường!
+            Bạn có <b>2 phút</b> để lái xe Wave đến nhà bạn gái, đón cô ấy tới lớp học thêm Văn và đánh bại nhóm giang hồ ngáng đường!
         </p>
-        <div class="bg-white/10 p-4 rounded-lg text-left text-xs md:text-sm mb-6 space-y-1.5 border border-white/20 max-w-md">
-            <p>🎮 <b>Máy tính:</b> Phím <span class="bg-yellow-500/40 px-1.5 py-0.5 rounded">WASD</span> hoặc <span class="bg-yellow-500/40 px-1.5 py-0.5 rounded">Mũi tên</span> di chuyển. Click <span class="bg-yellow-500/40 px-1.5 py-0.5 rounded">Chuột trái</span> để bắn súng khi gặp Boss.</p>
-            <p>📱 <b>Điện thoại:</b> Phím điều hướng ảo và nút 🔫 để bắn.</p>
+        <div class="bg-white/10 p-4 rounded-xl text-left text-xs md:text-sm mb-6 space-y-2 border border-white/20 max-w-md">
+            <p>🎮 <b>Máy tính:</b> Phím <span class="bg-yellow-500/40 px-1.5 py-0.5 rounded font-mono">WASD</span> hoặc <span class="bg-yellow-500/40 px-1.5 py-0.5 rounded font-mono">Mũi tên</span> để lái xe. Nhấn <span class="bg-yellow-500/40 px-1.5 py-0.5 rounded font-mono">Space</span> hoặc <span class="bg-yellow-500/40 px-1.5 py-0.5 rounded font-mono">Chuột trái</span> để bắn khi gặp Boss.</p>
+            <p>📱 <b>Điện thoại:</b> Dùng cụm phím điều hướng bên trái và nút 🔫 bên phải để bắn.</p>
         </div>
-        <button id="start-btn" class="px-8 py-3.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-black text-xl rounded-full shadow-lg transform active:scale-95 transition">
+        <button id="start-btn" class="px-8 py-3.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-black text-lg md:text-xl rounded-full shadow-lg transform active:scale-95 transition cursor-pointer">
             BẮT ĐẦU NGAY 🚀
         </button>
     </div>
@@ -114,7 +114,7 @@
             <div></div>
         </div>
         <!-- Shoot Button -->
-        <button id="btn-shoot" class="touch-btn w-20 h-20 bg-red-600/80 border-red-400 text-2xl font-black pointer-events-auto shadow-lg hidden">
+        <button id="btn-shoot" class="touch-btn w-20 h-20 bg-red-600/80 border-red-400 text-3xl font-black pointer-events-auto shadow-lg hidden">
             🔫
         </button>
     </div>
@@ -129,7 +129,7 @@
 </div>
 
 <script>
-// Web Audio API Sound Generator
+// ==================== HỆ THỐNG ÂM THANH (WEB AUDIO API) ====================
 class SoundSystem {
     constructor() {
         this.ctx = null;
@@ -158,7 +158,7 @@ class SoundSystem {
             gain.connect(this.ctx.destination);
             osc.start();
             osc.stop(this.ctx.currentTime + duration);
-        } catch(e){}
+        } catch (e) {}
     }
 
     playPickupSound() {
@@ -171,17 +171,19 @@ class SoundSystem {
     playShootSound() {
         this.init();
         if (!this.ctx) return;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(450, this.ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(90, this.ctx.currentTime + 0.1);
-        gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
-        gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.1);
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-        osc.start();
-        osc.stop(this.ctx.currentTime + 0.1);
+        try {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(480, this.ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(90, this.ctx.currentTime + 0.1);
+            gain.gain.setValueAtTime(0.18, this.ctx.currentTime);
+            gain.gain.linearRampToValueAtTime(0.001, this.ctx.currentTime + 0.1);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start();
+            osc.stop(this.ctx.currentTime + 0.1);
+        } catch (e) {}
     }
 
     playHitSound() {
@@ -191,7 +193,7 @@ class SoundSystem {
 
     playBossHitSound() {
         this.init();
-        this.playTone(120, 'sawtooth', 0.15, 0.25);
+        this.playTone(110, 'sawtooth', 0.15, 0.25);
     }
 
     playWinSound() {
@@ -209,7 +211,7 @@ class SoundSystem {
         let idx = 0;
         this.bgmTimer = setInterval(() => {
             if (this.ctx && this.ctx.state === 'running') {
-                this.playTone(notes[idx], 'sine', 0.18, 0.04);
+                this.playTone(notes[idx], 'sine', 0.18, 0.035);
                 idx = (idx + 1) % notes.length;
             }
         }, 220);
@@ -225,60 +227,60 @@ class SoundSystem {
 
 const audio = new SoundSystem();
 
-// Game Logic & Canvas setup
+// ==================== KHỞI TẠO CANVAS & HÌNH ẢNH ====================
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
-const img1 = document.getElementById('img-1');
-const img2 = document.getElementById('img-2');
-const img3 = document.getElementById('img-3');
-const img4 = document.getElementById('img-4');
+const imgWave = document.getElementById('img-1');
+const imgBoss = document.getElementById('img-2');
+const imgGF = document.getElementById('img-11'); // Đã sửa lỗi ID từ img-3 thành img-11
+const imgBoy = document.getElementById('img-4');
 
-let GAME_WIDTH = 1000;
-let GAME_HEIGHT = 500;
+const GAME_WIDTH = 1000;
+const GAME_HEIGHT = 500;
 
 function resizeCanvas() {
-    const aspect = 2 / 1;
-    let w = window.innerWidth * 0.95;
-    let h = window.innerHeight * 0.9;
-    
+    const aspect = GAME_WIDTH / GAME_HEIGHT;
+    let w = window.innerWidth * 0.96;
+    let h = window.innerHeight * 0.92;
+
     if (w / h > aspect) {
         w = h * aspect;
     } else {
         h = w / aspect;
     }
-    
+
     canvas.width = GAME_WIDTH;
     canvas.height = GAME_HEIGHT;
-    canvas.style.width = w + 'px';
-    canvas.style.height = h + 'px';
+    canvas.style.width = `${w}px`;
+    canvas.style.height = `${h}px`;
 }
 
 window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
 
-// Game Variables
-let gameState = 'START'; 
+// ==================== BIẾN TRẠNG THÁI GAME ====================
+let gameState = 'START';
 let timer = 120;
 let lastTime = 0;
 let stage = 1;
+let shootCooldown = 0;
 
-// Player Stats
 const player = {
     x: 100,
     y: 320,
     width: 130,
     height: 80,
-    speed: 6,
+    speed: 6.5,
     hp: 10000,
     maxHp: 10000,
-    hasGF: false
+    hasGF: false,
+    hasGun: false
 };
 
-// Boss Stats
 const boss = {
-    x: 750,
-    y: 200,
+    x: 760,
+    y: 210,
     width: 180,
     height: 220,
     hp: 100,
@@ -287,18 +289,17 @@ const boss = {
     attackTimer: 0
 };
 
-// House Location
 const gfHouse = {
-    x: 1200,
-    y: 200,
-    width: 140,
-    height: 180,
+    x: 1100,
+    y: 130,
+    width: 160,
+    height: 170,
+    active: false,
     passed: false
 };
 
-// Input state
 const keys = {
-    w: false, a: false, s: false, d: false
+    w: false, a: false, s: false, d: false, shoot: false
 };
 
 let obstacles = [];
@@ -308,13 +309,21 @@ let particles = [];
 let damageTexts = [];
 let bossProjectiles = [];
 
-// Event Listeners for Keyboard
+let obstacleSpawnTimer = 0;
+let itemSpawnTimer = 0;
+let bgOffset = 0;
+
+// ==================== ĐIỀU KHIỂN BÀN PHÍM, CHUỘT & CẢM ỨNG ====================
 window.addEventListener('keydown', (e) => {
     const k = e.key.toLowerCase();
     if (k === 'w' || k === 'arrowup') keys.w = true;
     if (k === 'a' || k === 'arrowleft') keys.a = true;
     if (k === 's' || k === 'arrowdown') keys.s = true;
     if (k === 'd' || k === 'arrowright') keys.d = true;
+    if (e.code === 'Space') {
+        e.preventDefault();
+        keys.shoot = true;
+    }
 });
 
 window.addEventListener('keyup', (e) => {
@@ -323,61 +332,64 @@ window.addEventListener('keyup', (e) => {
     if (k === 'a' || k === 'arrowleft') keys.a = false;
     if (k === 's' || k === 'arrowdown') keys.s = false;
     if (k === 'd' || k === 'arrowright') keys.d = false;
+    if (e.code === 'Space') keys.shoot = false;
 });
 
-// Shooting Controls
 canvas.addEventListener('mousedown', (e) => {
-    if (e.button === 0 && stage === 4 && gameState === 'PLAYING') {
-        shootGun();
+    if (e.button === 0 && gameState === 'PLAYING') {
+        keys.shoot = true;
     }
+});
+
+window.addEventListener('mouseup', () => {
+    keys.shoot = false;
 });
 
 function bindTouchBtn(id, keyName) {
     const btn = document.getElementById(id);
-    btn.addEventListener('touchstart', (e) => {
+    const startAction = (e) => {
         e.preventDefault();
         keys[keyName] = true;
-    });
-    btn.addEventListener('touchend', (e) => {
+        btn.classList.add('active');
+    };
+    const endAction = (e) => {
         e.preventDefault();
         keys[keyName] = false;
-    });
+        btn.classList.remove('active');
+    };
+    btn.addEventListener('touchstart', startAction, { passive: false });
+    btn.addEventListener('touchend', endAction, { passive: false });
+    btn.addEventListener('touchcancel', endAction, { passive: false });
 }
 
 bindTouchBtn('btn-up', 'w');
 bindTouchBtn('btn-down', 's');
 bindTouchBtn('btn-left', 'a');
 bindTouchBtn('btn-right', 'd');
-
-document.getElementById('btn-shoot').addEventListener('touchstart', (e) => {
-    e.preventDefault();
-    if (stage === 4 && gameState === 'PLAYING') {
-        shootGun();
-    }
-});
+bindTouchBtn('btn-shoot', 'shoot');
 
 function shootGun() {
+    if (shootCooldown > 0) return;
+    shootCooldown = 0.22; // Tốc độ bắn tối đa ~4.5 viên/giây
     audio.playShootSound();
     bullets.push({
-        x: player.x + player.width - 10,
+        x: player.x + player.width + 10,
         y: player.y + 26,
         radius: 6,
-        speed: 15
+        speed: 16
     });
 }
 
-let obstacleSpawnTimer = 0;
-let itemSpawnTimer = 0;
-
+// ==================== LOGIC SINH VẬT THỂ & HIỆU ỨNG ====================
 function spawnObstacle() {
-    if (stage === 4) return;
+    if (stage === 4 || gfHouse.active) return;
     const types = ['cone', 'hole', 'box'];
     const type = types[Math.floor(Math.random() * types.length)];
     obstacles.push({
         x: GAME_WIDTH + 50,
-        y: 280 + Math.random() * 110,
-        width: 35,
-        height: 35,
+        y: 285 + Math.random() * 115,
+        width: 36,
+        height: 36,
         type: type
     });
 }
@@ -388,9 +400,9 @@ function spawnItem() {
     const type = types[Math.floor(Math.random() * types.length)];
     items.push({
         x: GAME_WIDTH + 50,
-        y: 270 + Math.random() * 120,
-        width: 30,
-        height: 30,
+        y: 275 + Math.random() * 125,
+        width: 32,
+        height: 32,
         type: type,
         bounceOffset: 0
     });
@@ -403,7 +415,7 @@ function addDamageText(x, y, text, color = '#ff3333') {
         text: text,
         color: color,
         life: 1.0,
-        vy: -2
+        vy: -1.8
     });
 }
 
@@ -421,10 +433,8 @@ function createParticles(x, y, color, count = 10) {
     }
 }
 
-// Collision Check Helper (Box & Circle/Box)
 function checkCollision(r1, r2) {
-    // If r1 is a bullet (has radius)
-    if (r1.radius) {
+    if (r1.radius !== undefined) {
         return (
             r1.x + r1.radius > r2.x &&
             r1.x - r1.radius < r2.x + r2.width &&
@@ -432,42 +442,55 @@ function checkCollision(r1, r2) {
             r1.y - r1.radius < r2.y + r2.height
         );
     }
+    // Thu nhỏ hitbox của xe một chút để cảm giác va chạm công bằng hơn
+    const pad = 8;
     return (
-        r1.x < r2.x + r2.width &&
-        r1.x + r1.width > r2.x &&
-        r1.y < r2.y + r2.height &&
-        r1.y + r1.height > r2.y
+        r1.x + pad < r2.x + r2.width &&
+        r1.x + r1.width - pad > r2.x &&
+        r1.y + pad < r2.y + r2.height &&
+        r1.y + r1.height - pad > r2.y
     );
 }
 
+// ==================== KHỞI ĐỘNG & CẬP NHẬT GAME ====================
 function startGame() {
     gameState = 'PLAYING';
     timer = 120;
     stage = 1;
+    shootCooldown = 0;
+
     player.x = 100;
     player.y = 320;
     player.hp = 10000;
     player.hasGF = false;
+    player.hasGun = false;
+
     boss.hp = 100;
     boss.active = false;
-    gfHouse.x = 1200;
-    
+    boss.attackTimer = 0;
+
+    gfHouse.x = 1100;
+    gfHouse.active = false;
+    gfHouse.passed = false;
+
     obstacles = [];
     items = [];
     bullets = [];
     particles = [];
     damageTexts = [];
     bossProjectiles = [];
-    
+
     document.getElementById('modal-screen').classList.add('hidden');
     document.getElementById('boss-hp-box').classList.add('hidden');
     document.getElementById('btn-shoot').classList.add('hidden');
-    
+
     audio.startBGM();
 }
 
 function update(delta) {
     if (gameState !== 'PLAYING') return;
+
+    if (shootCooldown > 0) shootCooldown -= delta;
 
     timer -= delta;
     if (timer <= 0) {
@@ -478,67 +501,85 @@ function update(delta) {
 
     const elapsedTime = 120 - timer;
 
-    if (elapsedTime < 30) {
+    // Quản lý tiến trình 4 giai đoạn mượt mà
+    if (elapsedTime < 25) {
         stage = 1;
         document.getElementById('stage-text').innerText = "Giai đoạn 1: Phóng xe tới nhà người yêu";
-    } else if (elapsedTime >= 30 && elapsedTime < 32 && !player.hasGF) {
+    } else if (elapsedTime >= 25 && !gfHouse.passed) {
         stage = 2;
-        document.getElementById('stage-text').innerText = "Giai đoạn 2: Đã tới nhà đón người yêu lên xe!";
-        gfHouse.x -= 4;
-        if (gfHouse.x <= player.x + 80) {
+        gfHouse.active = true;
+        document.getElementById('stage-text').innerText = "Giai đoạn 2: Đã tới nhà! Hãy đón người yêu lên xe!";
+        gfHouse.x -= 4.5;
+
+        // Tự động đón người yêu khi xe ngang qua cửa nhà
+        if (!player.hasGF && gfHouse.x <= player.x + 90) {
             player.hasGF = true;
             audio.playPickupSound();
-            addDamageText(player.x, player.y - 20, "ĐÃ ĐÓN NGƯỜI YÊU! ❤️", "#ff69b4");
+            addDamageText(player.x + 20, player.y - 25, "ĐÃ ĐÓN NGƯỜI YÊU! ❤️", "#ff69b4");
+            createParticles(player.x + 40, player.y, '#ff69b4', 15);
         }
-    } else if (elapsedTime >= 32 && elapsedTime < 90) {
+
+        if (gfHouse.x < -gfHouse.width - 50) {
+            gfHouse.active = false;
+            gfHouse.passed = true;
+            player.hasGF = true; // Đảm bảo luôn đón được để tiếp tục cốt truyện
+        }
+    } else if (elapsedTime < 85) {
         stage = 3;
-        player.hasGF = true;
-        document.getElementById('stage-text').innerText = "Giai đoạn 3: Hai đứa cùng đi trên Wave Alpha";
-    } else if (elapsedTime >= 90) {
+        document.getElementById('stage-text').innerText = "Giai đoạn 3: Chở người yêu vi vu tới lớp Văn";
+    } else {
         if (stage !== 4) {
             stage = 4;
             boss.active = true;
+            player.hasGun = true;
+            obstacles = []; // Xóa vật cản mặt đường để tập trung đấu Boss
             document.getElementById('boss-hp-box').classList.remove('hidden');
             document.getElementById('btn-shoot').classList.remove('hidden');
             document.getElementById('stage-text').innerText = "Giai đoạn 4: ĐẠI CHIẾN GIANG HỒ NGÁNG ĐƯỜNG!";
-            addDamageText(GAME_WIDTH / 2 - 50, 150, "CẢNH BÁO: BOSS XUẤT HIỆN!", "#ff0000");
+            addDamageText(GAME_WIDTH / 2 - 110, 150, "⚠️ CẢNH BÁO: BOSS XUẤT HIỆN!", "#ff3333");
         }
     }
 
-    // Controls
-    if (keys.w && player.y > 230) player.y -= player.speed;
-    if (keys.s && player.y < 400) player.y += player.speed;
-    if (keys.a && player.x > 30) player.x -= player.speed;
-    if (keys.d && player.x < GAME_WIDTH - 200) player.x += player.speed;
+    // Di chuyển người chơi
+    if (keys.w && player.y > 235) player.y -= player.speed;
+    if (keys.s && player.y < 405) player.y += player.speed;
+    if (keys.a && player.x > 25) player.x -= player.speed;
+    if (keys.d && player.x < (stage === 4 ? 580 : GAME_WIDTH - 160)) player.x += player.speed;
 
-    // Obstacles & Items Spawns
+    // Bắn súng (hoạt động ở Giai đoạn 4 hoặc khi nhặt được súng)
+    if (keys.shoot && (stage === 4 || player.hasGun)) {
+        shootGun();
+    }
+
+    // Sinh vật cản & vật phẩm
     if (stage !== 4) {
         obstacleSpawnTimer += delta;
-        if (obstacleSpawnTimer > 1.8) {
+        if (obstacleSpawnTimer > 1.7) {
             spawnObstacle();
             obstacleSpawnTimer = 0;
         }
 
         itemSpawnTimer += delta;
-        if (itemSpawnTimer > 3.0) {
+        if (itemSpawnTimer > 2.8) {
             spawnItem();
             itemSpawnTimer = 0;
         }
     }
 
-    // Move Obstacles
+    // Cập nhật vật cản
     for (let i = obstacles.length - 1; i >= 0; i--) {
-        let obs = obstacles[i];
+        const obs = obstacles[i];
         obs.x -= 6;
 
         if (checkCollision(player, obs)) {
-            player.hp -= 250;
+            player.hp = Math.max(0, player.hp - 250);
             audio.playHitSound();
             addDamageText(player.x, player.y, "-250 HP", "#ff3333");
             createParticles(obs.x, obs.y, '#ff4444', 8);
             obstacles.splice(i, 1);
+
             if (player.hp <= 0) {
-                gameOver(false, "Xe bạn đã bị ngã do trúng vật cản quá nhiều!");
+                gameOver(false, "Xe bạn đã bị ngã do đâm trúng quá nhiều vật cản!");
                 return;
             }
             continue;
@@ -547,11 +588,11 @@ function update(delta) {
         if (obs.x < -50) obstacles.splice(i, 1);
     }
 
-    // Move Items
+    // Cập nhật vật phẩm
     for (let i = items.length - 1; i >= 0; i--) {
-        let item = items[i];
+        const item = items[i];
         item.x -= 5;
-        item.bounceOffset = Math.sin(Date.now() / 200) * 5;
+        item.bounceOffset = Math.sin(Date.now() / 180) * 5;
 
         if (checkCollision(player, item)) {
             audio.playPickupSound();
@@ -562,7 +603,9 @@ function update(delta) {
                 player.hp = Math.min(player.maxHp, player.hp + 500);
                 addDamageText(player.x, player.y, "+500 HP ⚡", "#ffff33");
             } else if (item.type === 'gun') {
-                addDamageText(player.x, player.y, "SẴN SÀNG CHIẾN BOSS! 🔫", "#00ffff");
+                player.hasGun = true;
+                document.getElementById('btn-shoot').classList.remove('hidden');
+                addDamageText(player.x, player.y, "NHẶT ĐƯỢC SÚNG! 🔫", "#00ffff");
             }
             createParticles(item.x, item.y, '#ffff55', 10);
             items.splice(i, 1);
@@ -572,23 +615,22 @@ function update(delta) {
         if (item.x < -50) items.splice(i, 1);
     }
 
-    // Bullets Logic & Boss Collision (Xử lý bắn trúng Boss gây sát thương)
+    // Cập nhật đạn của người chơi
     for (let i = bullets.length - 1; i >= 0; i--) {
-        let b = bullets[i];
+        const b = bullets[i];
         b.x += b.speed;
 
         if (boss.active && checkCollision(b, boss)) {
-            const dmg = Math.floor(Math.random() * 41) + 10; // Trừ từ 10 - 50 HP
-            boss.hp -= dmg;
+            const dmg = Math.floor(Math.random() * 11) + 5; // Trừ 5 - 15 HP mỗi viên để trận đấu kịch tính
+            boss.hp = Math.max(0, boss.hp - dmg);
             audio.playBossHitSound();
-            addDamageText(boss.x + 30, boss.y + 40, `-${dmg} HP`, "#ffff00");
-            createParticles(b.x, b.y, '#ff9900', 12);
+            addDamageText(boss.x + 40, boss.y + 40, `-${dmg} HP`, "#ffff00");
+            createParticles(b.x, b.y, '#ff9900', 10);
             bullets.splice(i, 1);
 
             if (boss.hp <= 0) {
-                boss.hp = 0;
                 audio.playWinSound();
-                gameOver(true, "BẠN ĐÃ ĐÁNH BẠI NHÓM NGUY HIỂM VÀ ĐƯA NGƯỜI YÊU TỚI LỚP HỌC VĂN AN TOÀN!");
+                gameOver(true, "BẠN ĐÃ ĐÁNH BẠI NHÓM GIANG HỒ VÀ ĐƯA NGƯỜI YÊU TỚI LỚP HỌC VĂN AN TOÀN!");
                 return;
             }
             continue;
@@ -597,49 +639,56 @@ function update(delta) {
         if (b.x > GAME_WIDTH + 20) bullets.splice(i, 1);
     }
 
-    // Boss Behavior
+    // Hành vi của Boss
     if (boss.active) {
-        boss.y += Math.sin(Date.now() / 300) * 2;
-        
+        boss.y = 210 + Math.sin(Date.now() / 350) * 65;
+
         boss.attackTimer += delta;
-        if (boss.attackTimer > 1.4) {
+        if (boss.attackTimer > 1.2) {
             boss.attackTimer = 0;
             bossProjectiles.push({
                 x: boss.x,
-                y: boss.y + 50 + Math.random() * 100,
-                vx: -7,
-                vy: (Math.random() - 0.5) * 3,
+                y: boss.y + 40 + Math.random() * 120,
+                vx: -7.5,
+                vy: (Math.random() - 0.5) * 3.5,
                 radius: 12
             });
         }
     }
 
-    // Boss Projectiles Collision
+    // Cập nhật đạn của Boss
     for (let i = bossProjectiles.length - 1; i >= 0; i--) {
-        let bp = bossProjectiles[i];
+        const bp = bossProjectiles[i];
         bp.x += bp.vx;
         bp.y += bp.vy;
 
-        if (checkCollision(player, { x: bp.x - bp.radius, y: bp.y - bp.radius, width: bp.radius * 2, height: bp.radius * 2 })) {
-            player.hp -= 400;
+        const bpBox = {
+            x: bp.x - bp.radius,
+            y: bp.y - bp.radius,
+            width: bp.radius * 2,
+            height: bp.radius * 2
+        };
+
+        if (checkCollision(player, bpBox)) {
+            player.hp = Math.max(0, player.hp - 400);
             audio.playHitSound();
             addDamageText(player.x, player.y, "-400 HP", "#ff0055");
             createParticles(bp.x, bp.y, '#ff0000', 8);
             bossProjectiles.splice(i, 1);
 
             if (player.hp <= 0) {
-                gameOver(false, "Bạn đã kiệt sức trước nhóm ngáng đường!");
+                gameOver(false, "Bạn đã kiệt sức trước nhóm giang hồ ngáng đường!");
                 return;
             }
             continue;
         }
 
-        if (bp.x < -20) bossProjectiles.splice(i, 1);
+        if (bp.x < -30) bossProjectiles.splice(i, 1);
     }
 
-    // FX Updates
+    // Cập nhật hạt hiệu ứng & chữ sát thương
     for (let i = particles.length - 1; i >= 0; i--) {
-        let p = particles[i];
+        const p = particles[i];
         p.x += p.vx;
         p.y += p.vy;
         p.life -= delta * 2;
@@ -647,34 +696,36 @@ function update(delta) {
     }
 
     for (let i = damageTexts.length - 1; i >= 0; i--) {
-        let dt = damageTexts[i];
+        const dt = damageTexts[i];
         dt.y += dt.vy;
-        dt.life -= delta * 1.5;
+        dt.life -= delta * 1.4;
         if (dt.life <= 0) damageTexts.splice(i, 1);
     }
 
-    // UI Updates
+    // Cập nhật thanh giao diện (UI)
     const hpPercent = Math.max(0, (player.hp / player.maxHp) * 100);
-    document.getElementById('hp-bar').style.width = hpPercent + '%';
+    document.getElementById('hp-bar').style.width = `${hpPercent}%`;
     document.getElementById('hp-text').innerText = `${player.hp} / ${player.maxHp} HP`;
 
     if (boss.active) {
         const bossHpPercent = Math.max(0, (boss.hp / boss.maxHp) * 100);
-        document.getElementById('boss-hp-bar').style.width = bossHpPercent + '%';
-        document.getElementById('boss-hp-text').innerText = `${Math.max(0, boss.hp)} / ${boss.maxHp} HP`;
+        document.getElementById('boss-hp-bar').style.width = `${bossHpPercent}%`;
+        document.getElementById('boss-hp-text').innerText = `${boss.hp} / ${boss.maxHp} HP`;
     }
 
     const mins = Math.floor(timer / 60);
     const secs = Math.floor(timer % 60);
-    document.getElementById('timer-text').innerText = 
+    document.getElementById('timer-text').innerText =
         `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
 }
 
-let bgOffset = 0;
-
+// ==================== VẼ ĐỒ HỌA LÊN CANVAS ====================
 function drawBackground() {
-    bgOffset = (bgOffset + 2) % GAME_WIDTH;
+    if (gameState === 'PLAYING') {
+        bgOffset = (bgOffset + 4) % GAME_WIDTH;
+    }
 
+    // Bầu trời
     const skyGradient = ctx.createLinearGradient(0, 0, 0, GAME_HEIGHT);
     skyGradient.addColorStop(0, '#3a7bd5');
     skyGradient.addColorStop(0.6, '#3a6073');
@@ -682,24 +733,53 @@ function drawBackground() {
     ctx.fillStyle = skyGradient;
     ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
-    for (let i = 0; i < 6; i++) {
-        let bx = (i * 200 - bgOffset * 0.3) % (GAME_WIDTH + 200) - 100;
-        ctx.fillRect(bx, 150, 80, 150);
-        ctx.fillRect(bx + 90, 180, 60, 120);
+    // Các tòa nhà nền
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.14)';
+    for (let i = 0; i < 7; i++) {
+        const bx = ((i * 200 - bgOffset * 0.35) % (GAME_WIDTH + 200) + (GAME_WIDTH + 200)) % (GAME_WIDTH + 200) - 100;
+        ctx.fillRect(bx, 130, 80, 150);
+        ctx.fillRect(bx + 90, 165, 60, 115);
     }
 
+    // Mặt đường nhựa
     ctx.fillStyle = '#4a4a4a';
     ctx.fillRect(0, 270, GAME_WIDTH, 230);
 
+    // Lề đường trên
+    ctx.fillStyle = '#7f8c8d';
+    ctx.fillRect(0, 262, GAME_WIDTH, 10);
+
+    // Vạch kẻ đường vàng đứt đoạn
     ctx.strokeStyle = '#f1c40f';
     ctx.lineWidth = 6;
-    ctx.setLineDash([40, 30]);
+    ctx.setLineDash([45, 35]);
     ctx.beginPath();
-    ctx.moveTo(-bgOffset, 370);
-    ctx.lineTo(GAME_WIDTH * 2, 370);
+    ctx.moveTo(-bgOffset, 375);
+    ctx.lineTo(GAME_WIDTH * 2, 375);
     ctx.stroke();
     ctx.setLineDash([]);
+}
+
+function drawAvatarCircle(img, cx, cy, radius, borderColor, fallbackColor) {
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+    ctx.closePath();
+    ctx.clip();
+
+    if (img && img.complete && img.naturalWidth > 0) {
+        ctx.drawImage(img, cx - radius, cy - radius, radius * 2, radius * 2);
+    } else {
+        ctx.fillStyle = fallbackColor;
+        ctx.fillRect(cx - radius, cy - radius, radius * 2, radius * 2);
+    }
+    ctx.restore();
+
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+    ctx.strokeStyle = borderColor;
+    ctx.lineWidth = 2.5;
+    ctx.stroke();
 }
 
 function render() {
@@ -707,19 +787,33 @@ function render() {
 
     drawBackground();
 
-    if (stage === 1 || stage === 2) {
+    // Vẽ nhà người yêu ở Giai đoạn 2
+    if (gfHouse.active) {
+        // Thân nhà
         ctx.fillStyle = '#e74c3c';
         ctx.fillRect(gfHouse.x, gfHouse.y, gfHouse.width, gfHouse.height);
+        // Mái nhà
+        ctx.fillStyle = '#c0392b';
+        ctx.beginPath();
+        ctx.moveTo(gfHouse.x - 10, gfHouse.y);
+        ctx.lineTo(gfHouse.x + gfHouse.width / 2, gfHouse.y - 45);
+        ctx.lineTo(gfHouse.x + gfHouse.width + 10, gfHouse.y);
+        ctx.closePath();
+        ctx.fill();
+        // Cửa chính
         ctx.fillStyle = '#f39c12';
-        ctx.fillRect(gfHouse.x + 40, gfHouse.y + 90, 60, 90);
+        ctx.fillRect(gfHouse.x + 50, gfHouse.y + 80, 60, 90);
+
         ctx.fillStyle = '#fff';
         ctx.font = 'bold 14px sans-serif';
-        ctx.fillText("NHÀ NGƯỜI YÊU 🏠", gfHouse.x + 5, gfHouse.y - 10);
-        if (!player.hasGF && img3.complete && img3.naturalWidth > 0) {
-            ctx.drawImage(img3, gfHouse.x + 45, gfHouse.y + 30, 50, 50);
+        ctx.fillText("NHÀ NGƯỜI YÊU 🏠", gfHouse.x + 15, gfHouse.y - 52);
+
+        if (!player.hasGF) {
+            drawAvatarCircle(imgGF, gfHouse.x + 80, gfHouse.y + 42, 24, '#ff69b4', '#ff85a2');
         }
     }
 
+    // Vẽ vật cản
     obstacles.forEach(obs => {
         if (obs.type === 'cone') {
             ctx.fillStyle = '#e67e22';
@@ -730,69 +824,62 @@ function render() {
             ctx.closePath();
             ctx.fill();
         } else if (obs.type === 'hole') {
-            ctx.fillStyle = '#222';
+            ctx.fillStyle = '#1e1e1e';
             ctx.beginPath();
             ctx.ellipse(obs.x + obs.width / 2, obs.y + obs.height / 2, obs.width / 2, obs.height / 3, 0, 0, Math.PI * 2);
             ctx.fill();
         } else {
-            ctx.fillStyle = '#7f8c8d';
+            ctx.fillStyle = '#95a5a6';
             ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
+            ctx.strokeStyle = '#2c3e50';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(obs.x, obs.y, obs.width, obs.height);
         }
     });
 
+    // Vẽ vật phẩm
     items.forEach(item => {
         const iy = item.y + item.bounceOffset;
+        ctx.font = '26px sans-serif';
         if (item.type === 'heart') {
-            ctx.fillStyle = '#e74c3c';
-            ctx.font = '24px sans-serif';
-            ctx.fillText('❤️', item.x, iy + 22);
+            ctx.fillText('❤️', item.x, iy + 24);
         } else if (item.type === 'energy') {
-            ctx.fillStyle = '#f1c40f';
-            ctx.font = '24px sans-serif';
-            ctx.fillText('⚡', item.x, iy + 22);
+            ctx.fillText('⚡', item.x, iy + 24);
         } else {
-            ctx.fillStyle = '#3498db';
-            ctx.font = '24px sans-serif';
-            ctx.fillText('🔫', item.x, iy + 22);
+            ctx.fillText('🔫', item.x, iy + 24);
         }
     });
 
-    if (img1.complete && img1.naturalWidth > 0) {
-        ctx.drawImage(img1, player.x, player.y, player.width, player.height);
+    // Vẽ xe Wave của người chơi
+    if (imgWave.complete && imgWave.naturalWidth > 0) {
+        ctx.drawImage(imgWave, player.x, player.y, player.width, player.height);
     } else {
         ctx.fillStyle = '#e74c3c';
         ctx.fillRect(player.x, player.y + 30, player.width, 40);
-    }
-
-    if (img4.complete && img4.naturalWidth > 0) {
-        ctx.save();
-        ctx.beginPath();
-        ctx.arc(player.x + 75, player.y + 15, 22, 0, Math.PI * 2);
-        ctx.clip();
-        ctx.drawImage(img4, player.x + 50, player.y - 10, 50, 50);
-        ctx.restore();
-        ctx.strokeStyle = '#fff';
-        ctx.lineWidth = 2;
-        ctx.stroke();
-    }
-
-    if (player.hasGF && img3.complete && img3.naturalWidth > 0) {
-        ctx.save();
-        ctx.beginPath();
-        ctx.arc(player.x + 35, player.y + 15, 20, 0, Math.PI * 2);
-        ctx.clip();
-        ctx.drawImage(img3, player.x + 15, player.y - 5, 40, 40);
-        ctx.restore();
-        ctx.strokeStyle = '#ff69b4';
-        ctx.lineWidth = 2;
-        ctx.stroke();
-    }
-
-    if (stage === 4) {
         ctx.fillStyle = '#111';
-        ctx.fillRect(player.x + player.width - 10, player.y + 22, 25, 8);
+        ctx.beginPath();
+        ctx.arc(player.x + 25, player.y + 70, 15, 0, Math.PI * 2);
+        ctx.arc(player.x + 105, player.y + 70, 15, 0, Math.PI * 2);
+        ctx.fill();
     }
 
+    // Vẽ nhân vật nam cầm lái
+    drawAvatarCircle(imgBoy, player.x + 78, player.y + 12, 22, '#ffffff', '#3498db');
+
+    // Vẽ bạn gái ngồi sau xe
+    if (player.hasGF) {
+        drawAvatarCircle(imgGF, player.x + 34, player.y + 12, 20, '#ff69b4', '#ff85a2');
+    }
+
+    // Vẽ khẩu súng trên tay khi có súng hoặc ở Giai đoạn 4
+    if (stage === 4 || player.hasGun) {
+        ctx.fillStyle = '#111';
+        ctx.fillRect(player.x + player.width - 12, player.y + 22, 28, 8);
+        ctx.fillStyle = '#555';
+        ctx.fillRect(player.x + player.width - 12, player.y + 22, 10, 14);
+    }
+
+    // Vẽ đạn người chơi
     ctx.fillStyle = '#ffff00';
     bullets.forEach(b => {
         ctx.beginPath();
@@ -800,9 +887,10 @@ function render() {
         ctx.fill();
     });
 
+    // Vẽ Boss
     if (boss.active) {
-        if (img2.complete && img2.naturalWidth > 0) {
-            ctx.drawImage(img2, boss.x, boss.y, boss.width, boss.height);
+        if (imgBoss.complete && imgBoss.naturalWidth > 0) {
+            ctx.drawImage(imgBoss, boss.x, boss.y, boss.width, boss.height);
         } else {
             ctx.fillStyle = '#8e44ad';
             ctx.fillRect(boss.x, boss.y, boss.width, boss.height);
@@ -812,34 +900,46 @@ function render() {
         ctx.strokeRect(boss.x, boss.y, boss.width, boss.height);
     }
 
+    // Vẽ đạn Boss
     ctx.fillStyle = '#ff0055';
     bossProjectiles.forEach(bp => {
         ctx.beginPath();
         ctx.arc(bp.x, bp.y, bp.radius, 0, Math.PI * 2);
         ctx.fill();
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 2;
+        ctx.stroke();
     });
 
+    // Vẽ hạt hiệu ứng
     particles.forEach(p => {
+        ctx.save();
         ctx.fillStyle = p.color;
-        ctx.globalAlpha = p.life;
+        ctx.globalAlpha = Math.max(0, p.life);
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
         ctx.fill();
-        ctx.globalAlpha = 1.0;
+        ctx.restore();
     });
 
-    ctx.font = 'bold 16px sans-serif';
+    // Vẽ chữ sát thương / hồi máu
+    ctx.font = 'bold 17px sans-serif';
     damageTexts.forEach(dt => {
+        ctx.save();
         ctx.fillStyle = dt.color;
         ctx.globalAlpha = Math.max(0, dt.life);
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 3;
+        ctx.strokeText(dt.text, dt.x, dt.y);
         ctx.fillText(dt.text, dt.x, dt.y);
-        ctx.globalAlpha = 1.0;
+        ctx.restore();
     });
 }
 
+// ==================== VÒNG LẶP CHÍNH & KẾT THÚC ====================
 function gameLoop(timestamp) {
     if (!lastTime) lastTime = timestamp;
-    const delta = (timestamp - lastTime) / 1000;
+    const delta = Math.min(0.1, (timestamp - lastTime) / 1000); // Giới hạn delta <= 0.1s để tránh giật lag khi chuyển tab
     lastTime = timestamp;
 
     update(delta);
@@ -851,21 +951,22 @@ function gameLoop(timestamp) {
 function gameOver(isWin, message) {
     gameState = isWin ? 'WIN' : 'GAMEOVER';
     audio.stopBGM();
-    
+    keys.shoot = false;
+
     const modal = document.getElementById('modal-screen');
     const title = document.getElementById('modal-title');
     const desc = document.getElementById('modal-desc');
     const btn = document.getElementById('start-btn');
-    
+
     modal.classList.remove('hidden');
     if (isWin) {
         title.innerText = "🎉 CHIẾN THẮNG HÙNG TRẠNG! 🎉";
-        title.className = "text-4xl md:text-5xl font-black text-green-400 mb-3 drop-shadow-lg";
+        title.className = "text-3xl md:text-5xl font-black text-green-400 mb-3 drop-shadow-lg";
         desc.innerText = message;
         btn.innerText = "CHƠI LẠI TRẬN MỚI 🔄";
     } else {
         title.innerText = "💔 GAME OVER 💔";
-        title.className = "text-4xl md:text-5xl font-black text-red-500 mb-3 drop-shadow-lg";
+        title.className = "text-3xl md:text-5xl font-black text-red-500 mb-3 drop-shadow-lg";
         desc.innerText = message;
         btn.innerText = "THỬ LẠI NGAY 🔄";
     }
@@ -873,6 +974,7 @@ function gameOver(isWin, message) {
 
 document.getElementById('start-btn').addEventListener('click', () => {
     audio.init();
+    lastTime = performance.now();
     startGame();
 });
 
